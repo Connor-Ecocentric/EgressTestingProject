@@ -23,16 +23,18 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 port = '1257'
 key_path = ("%s%s") % (cwd,'\\SSH_Key\\numen_collector_ssh')
-
+#">ssh -i \.ssh\numen_collector_ssh root@215.16.144.120 -p 1257 "export PATH=\"/usr/bin:/usr/local/bin:/sbin:/bin\" && python EgressTestV2.py""
 
 """
 Helper Functions for SSH Comms
 """
 CommandInfo = pd.DataFrame( columns= ['Command_Sent', 'Response_Raw', 'Error_log','Message_log'])
 class SSH():
+
         #%% Send Commands Function
     def SendCommand (self, command):
         global CommandInfo
+        EnvDict = {"PATH":"/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"}
         response = ""
         try: 
             print(" %s \n" % command)
@@ -50,11 +52,15 @@ class SSH():
                         print(response)           
             out_log_all = stdout.read().decode()
             err_log_all = stderr.read().decode()
+            print(err_log_all)
             CommandInfo = CommandInfo.append({'Command_Sent': command, 'Response_Raw': response, 'Error_log': err_log_all, 'Message_log': out_log_all}, ignore_index=True)
         except:
             print("Could not execute commands: %s" % command)
             error = 'Fatal Error, could not execute command'
             CommandInfo = CommandInfo.append({'Command_Sent': command, 'Error_log': error}, ignore_index=True)
+            print(CommandInfo)
+            err_log_all = stderr.read().decode()
+            print(err_log_all)
         return(response); 
     
     #%% Connect to host
@@ -110,6 +116,22 @@ class SSH():
         except:
             print("SCP didnt work") 
            
+            complete = 1
+    
+        return(complete)
+
+    def sendDirectorySCP(self, local, remote):
+        complete = 0
+    
+        try:
+            scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x) #progress = progress)
+            scp.put(files = local, remote_path = remote, recursive = True)
+            print("---------------------------------------------------\n")
+            print("Directory Transfered Successfully")
+            print("---------------------------------------------------\n")
+            complete = 1
+        except:
+            print("SCP didnt work") 
             complete = 1
     
         return(complete)

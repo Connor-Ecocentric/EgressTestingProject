@@ -2,12 +2,15 @@ import SSH_Comms
 import os
 import time
 cwd = dir_path = os.path.dirname(os.path.realpath(__file__))
+CurrentVersion = 'v3.50.05.11'
 
 
 class Collector():
     def __init__(self):
-        self.CollectorIp = Host #('215.16.144.81')
+        self.CollectorIp = Host
         #self.CollectorIp = ('10.0.0.96')
+        self.LocalPath = (cwd + "\\Test_result_logs")#, '\Test_result_logs\\')
+        self.LocalPath1 = (cwd + "\\Signature Folders\\" + CurrentVersion + "\\signatures")
         self.TestFile = ("%s%s") % (cwd,'\\EgressTestV2.py')
         self.DependencyFile1 = ("%s%s") % (cwd,'\Collector_Files\\SMART_Tool_Sample_armabihf')
         self.LocalFile3 = ("%s%s") % (cwd,'\\eco-feature-extract-serial-write')
@@ -19,17 +22,19 @@ class Collector():
         SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().sendSCP(self.TestFile, self.RemotePath)
         SSH_Comms.SSH().sendSCP(self.DependencyFile1, self.RemotePath)
+        SSH_Comms.SSH().sendDirectorySCP(self.LocalPath1, self.RemotePath)
         SSH_Comms.SSH().SendCommand('chmod 777 EgressTestV2.py')
         SSH_Comms.SSH().SendCommand('chmod 777 SMART_Tool_Sample_armabihf')
-        SSH_Comms.SSH().SendCommand('python EgressTestV2.py &')
-        
+        SSH_Comms.SSH().SendCommand("PATH=/usr/bin:/usr/local/bin:/sbin:/bin && python EgressTestV2.py")
+        print("Completed EgessTestV2, Pulling log file from collector now")
+        time.sleep(10)
+        SSH_Comms.SSH().getSCP(self.LocalPath, self.RemoteFile)
+        print("Completing final cleanup...... deleting log file and SMART tool file")
+        #SSH_Comms.SSH().SendCommand('rm N9C350B021801*')
+        SSH_Comms.SSH().SendCommand('rm SMART_Tool_Sample_armabihf')        
         SSH_Comms.ssh.close()
         return;
-    def GetData(self):
-        SSH_Comms.SSH().Connect(self.CollectorIp)
-        SSH_Comms.SSH().getSCP(self.LocalPath, self.RemoteFile)
-        SSH_Comms.SSH().SendCommand("rm egress*")
-        SSH_Comms.SSH().SendCommand("rm N9C350B0218*")
+
     def ShutDown(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().SendCommand("./mcu-disable-always-on.sh")
@@ -51,7 +56,7 @@ class Collector():
 
 
 
-HostNames = ['10.0.0.96']
+HostNames = ['215.16.144.119']
 #HostNames = [
 #'215.16.144.144',
 #'215.16.144.145',

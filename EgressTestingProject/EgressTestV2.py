@@ -14,10 +14,7 @@ def Sendcmd(cmd):
         result = subprocess.check_output(cmd, shell=True)
         return result;
     except:
-        os.system(cmd)
-        print cmd, 'doesnt seem to have an output pipe, will send again using os'
-
-
+        print("Fail to deploy command:" + cmd)
 def get_console_handler():
    console_handler = logging.StreamHandler(sys.stdout)
    console_handler.setFormatter(FORMATTER)
