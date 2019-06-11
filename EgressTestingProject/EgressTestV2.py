@@ -60,6 +60,12 @@ class EEMCTest(unittest.TestCase):
     def testRWSpeed(self):
         self.assertGreater(float(Sendcmd("hdparm -t /dev/mmcblk0 | awk '{printf $11}'")),16)
 class VersionTest(unittest.TestCase):
+    def testSha1sum(self):
+        EcoOverlay = self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/eco-overlay* | awk '{printf $1}'"))
+        EcoFeature = self.assertEqual(Sendcmd("sha1sum /usr/bin/eco-feature-extract | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/eco-feature* | awk '{printf $1}'"))
+        RawStreamer = self.assertEqual(Sendcmd("sha1sum /usr/bin/raw-streamer | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/raw-streamer* | awk '{printf $1}'"))
+        ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
+        ConfigDefault = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.default | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini.default | awk '{printf $1}'"))
     def testEcoversion(self):
         self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{print $1}'"),Sendcmd("sha1sum /run/media/mmcblk1p2/eco-overlay.tar.gz | awk '{print$1}'"))
     def testMCUVersion(self):

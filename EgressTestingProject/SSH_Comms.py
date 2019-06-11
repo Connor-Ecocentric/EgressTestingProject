@@ -59,8 +59,6 @@ class SSH():
             error = 'Fatal Error, could not execute command'
             CommandInfo = CommandInfo.append({'Command_Sent': command, 'Error_log': error}, ignore_index=True)
             print(CommandInfo)
-            err_log_all = stderr.read().decode()
-            print(err_log_all)
         return(response); 
     
     #%% Connect to host

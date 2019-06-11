@@ -14,7 +14,7 @@ class Collector():
         self.TestFile = ("%s%s") % (cwd,'\\EgressTestV2.py')
         self.DependencyFile1 = ("%s%s") % (cwd,'\Collector_Files\\SMART_Tool_Sample_armabihf')
         self.LocalFile3 = ("%s%s") % (cwd,'\\eco-feature-extract-serial-write')
-        self.LocalFile4 = ("%s%s") % (cwd, '\\ConfigFix.sh')
+        self.LocalFile4 = ("%s%s") % (cwd, '\\Collector_Files\\ConfigFix.sh')
         self.RemotePath = '/home/root/'
         self.RemotePath2 = '/'
         self.RemoteFile = '/home/root/N9C350B021801*'
@@ -56,7 +56,7 @@ class Collector():
 
 
 
-HostNames = ['215.16.144.119']
+HostNames = ['215.16.144.119','215.16.144.97']
 #HostNames = [
 #'215.16.144.144',
 #'215.16.144.145',
