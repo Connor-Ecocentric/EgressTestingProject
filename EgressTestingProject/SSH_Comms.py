@@ -23,7 +23,7 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 port = '1257'
 key_path = ("%s%s") % (cwd,'\\SSH_Key\\numen_collector_ssh')
-#">ssh -i \.ssh\numen_collector_ssh root@215.16.144.120 -p 1257 "export PATH=\"/usr/bin:/usr/local/bin:/sbin:/bin\" && python EgressTestV2.py""
+#">ssh -i \.ssh\numen_collector_ssh root@10.0.0.96 -p 1257 "export PATH=\"/usr/bin:/usr/local/bin:/sbin:/bin:/usr/sbin\" && python EgressTestV2.py""
 
 """
 Helper Functions for SSH Comms
@@ -47,6 +47,7 @@ class SSH():
                 if stdout.channel.recv_ready():
                     rl, wl, xl = select.select([stdout.channel], [], [], 0.0)
                     if len(rl) > 0:
+
                     # Print data from stdout
                         response = stdout.read().decode("utf-8")
                         print(response)           
@@ -55,12 +56,11 @@ class SSH():
             print(err_log_all)
             CommandInfo = CommandInfo.append({'Command_Sent': command, 'Response_Raw': response, 'Error_log': err_log_all, 'Message_log': out_log_all}, ignore_index=True)
         except:
-            print("Could not execute commands: %s" % command)
-            error = 'Fatal Error, could not execute command'
-            CommandInfo = CommandInfo.append({'Command_Sent': command, 'Error_log': error}, ignore_index=True)
-            print(CommandInfo)
-        return(response); 
-    
+           out_log_all = stdout.read()
+           err_log_all = stderr.read()
+           print('Fatal Error, could not execute command error log: ' + err_log_all)          
+           print(response); 
+           return;
     #%% Connect to host
     def Connect(self, hostname):
         try:

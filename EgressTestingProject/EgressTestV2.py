@@ -61,11 +61,14 @@ class EEMCTest(unittest.TestCase):
         self.assertGreater(float(Sendcmd("hdparm -t /dev/mmcblk0 | awk '{printf $11}'")),16)
 class VersionTest(unittest.TestCase):
     def testSha1sum(self):
+        Sendcmd("cp /media/sdcard/config.ini /media/sdcard/config.ini.test")
+        Sendcmd("sed -i 's/^client_id.*/client_id                         = N9C350B021801000/g' /media/sdcard/config.ini.test;sed -i 's/^client_secret.*/client_secret                     = 2157c540-64ae-11e8-bc00-7169bce88218/g' /media/sdcard/config.ini.test")
         EcoOverlay = self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/eco-overlay* | awk '{printf $1}'"))
         EcoFeature = self.assertEqual(Sendcmd("sha1sum /usr/bin/eco-feature-extract | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/eco-feature* | awk '{printf $1}'"))
         RawStreamer = self.assertEqual(Sendcmd("sha1sum /usr/bin/raw-streamer | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/raw-streamer* | awk '{printf $1}'"))
-        ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
+        ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.test | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
         ConfigDefault = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.default | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini.default | awk '{printf $1}'"))
+        Sendcmd("rm /media/sdcard/config.ini.test")
     def testEcoversion(self):
         self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{print $1}'"),Sendcmd("sha1sum /run/media/mmcblk1p2/eco-overlay.tar.gz | awk '{print$1}'"))
     def testMCUVersion(self):
@@ -96,10 +99,8 @@ class SDCardTest(unittest.TestCase):
         self.assertLess(int(average),3500)
         self.assertLess(int(maximum),3500)
     def testOutgoingEmpty(self):
-        subdir = ['aggregated_data','config','disag_id_data','feature_data','load_id','mode_id','monitor_mode','trash']
-        Sendcmd('rm -R /media/sdcard/outgoing; mkdir /media/sdcard/outgoing')
-        for dir in subdir:
-            Sendcmd('mkdir /media/sdcard/outgoing/' + str(dir))
+        Sendcmd('rm /media/sdcard/outgoing/**/*')
+        self.assertEqual(int(Sendcmd("ls -R /media/sdcard/outgoing/ | wc -l | awk {'printf $1'}")),25)
             
 class VoltageCalTest(unittest.TestCase):
     Sendcmd("eco-feature-extract -e | tee calibration.txt")
@@ -146,18 +147,20 @@ class PeripheralsTest(unittest.TestCase):
         self.assertGreater(int(Sendcmd('lsusb | grep Marvell | wc -l')),0)
     def testPCI(self):
         self.assertGreater(int(Sendcmd('lspci | grep Marvell | wc -l')),0)
-    def testRam(self):
-        used_mem = int(Sendcmd("top -bn1 | grep cached | awk 'FNR == 1 {printf $2}'").replace('K',''))
-        avail_mem = int(Sendcmd(" top -bn1 | grep cached | awk 'FNR == 1 {printf $4}'").replace('K',''))
-        self.assertGreater((used_mem+avail_mem),3850000)
+    
 
 class WifiTest(unittest.TestCase):
     def testLinkQual(self):
-        self.assertGreaterEqual(float(Sendcmd("iwconfig wlan0 | grep 'Link Quality' | awk '{printf $4}'").replace('level=', '')),-70)
-        level = float(Sendcmd("iwconfig wlan0 | grep 'Link Quality' | awk '{printf $4}'").replace('level=', ''))
-        log.info('wifi strength' + str(level))
+        self.assertGreaterEqual(float(Sendcmd("iw dev wlan0 station dump | grep signal | awk {'printf $2'}")),-70)
+        log.info('wifi strength' + Sendcmd("iw dev wlan0 station dump | grep signal | awk {'printf $2'}"))
 class MemTest(unittest.TestCase):
-    x = 1+1
+    def testRam(self):
+        self.assertGreater(Sendcmd("cat /proc/meminfo | grep 'MemTotal' | awk {'printf $2'}"),3850000)
+#class BITTest(unittest.TestCase):
+#    def testBIT(self):
+#        Sendcmd("numen9_bit | tee /home/root/BitLog.txt")
+#        self.assertIn("testIdCtDetection",Sendcmd("more /home/root/BitLog.txt | grep FAIL"))
+#        Sendcmd('rm /home/root/BitLog.txt')
 
 TEST_FILE = Sendcmd("printf $HOSTNAME") + "_EgressLog.txt"
 a = 10

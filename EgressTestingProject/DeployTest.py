@@ -25,26 +25,34 @@ class Collector():
         SSH_Comms.SSH().sendDirectorySCP(self.LocalPath1, self.RemotePath)
         SSH_Comms.SSH().SendCommand('chmod 777 EgressTestV2.py')
         SSH_Comms.SSH().SendCommand('chmod 777 SMART_Tool_Sample_armabihf')
-        SSH_Comms.SSH().SendCommand("PATH=/usr/bin:/usr/local/bin:/sbin:/bin && python EgressTestV2.py")
-        print("Completed EgessTestV2, Pulling log file from collector now")
-        time.sleep(10)
+        SSH_Comms.SSH().SendCommand("PATH=/usr/bin:/usr/local/bin:/sbin:/bin:/usr/sbin && python EgressTestV2.py")
+        print("Completed EgessTestV2")
+        SSH_Comms.ssh.close()
+        return;
+    def GetFile(self):
+        SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().getSCP(self.LocalPath, self.RemoteFile)
         print("Completing final cleanup...... deleting log file and SMART tool file")
         #SSH_Comms.SSH().SendCommand('rm N9C350B021801*')
         SSH_Comms.SSH().SendCommand('rm SMART_Tool_Sample_armabihf')        
         SSH_Comms.ssh.close()
-        return;
+
+
+
+
 
     def ShutDown(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().SendCommand("./mcu-disable-always-on.sh")
         SSH_Comms.SSH().SendCommand("sync; shutdown -P -t now")
+        SSH_Comms.ssh.close()
     def SerialFix(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().sendSCP(self.LocalFile3, self.RemotePath2)
         SSH_Comms.SSH().SendCommand("chmod 777 /eco-feature-extract-serial-write")
         SSH_Comms.SSH().SendCommand("/eco-feature-extract-serial-write -s $HOSTNAME")
         SSH_Comms.SSH().SendCommand("rm /eco-feature-ectract-serial-write")
+        SSH_Comms.ssh.close()
     def ConfigFix(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().sendSCP(self.LocalFile4, self.RemotePath)
@@ -52,11 +60,12 @@ class Collector():
         SSH_Comms.SSH().SendCommand("chmod 755 /home/root/ConfigFix.sh")
         SSH_Comms.SSH().SendCommand("/home/root/ConfigFix.sh")
         SSH_Comms.SSH().SendCommand("rm /home/root/ConfigFix.sh")
+        SSH_Comms.ssh.close()
 
 
 
 
-HostNames = ['215.16.144.119','215.16.144.97']
+HostNames = ['10.0.0.96']
 #HostNames = [
 #'215.16.144.144',
 #'215.16.144.145',
@@ -73,6 +82,8 @@ if TransferType == 1:
     print("Sending Files to Collector Now......")
     for Host in HostNames:
         Collector().SendFile()
+        time.sleep(5)
+        Collector().GetFile()
 elif TransferType == 2:
     for Host in HostNames:
         print("Recieving Files from Collector Now.....")
