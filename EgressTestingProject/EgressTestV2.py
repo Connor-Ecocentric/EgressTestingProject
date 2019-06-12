@@ -73,9 +73,9 @@ class VersionTest(unittest.TestCase):
         self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{print $1}'"),Sendcmd("sha1sum /run/media/mmcblk1p2/eco-overlay.tar.gz | awk '{print$1}'"))
     def testMCUVersion(self):
         Sendcmd("rm mcu.log; ./microBootloaderVersion.sh; ./microResetOnly.sh")
-        self.assertEqual(Sendcmd("more mcu.log | grep 'Application Version:' | awk 'NR==1 {printf $9}'"),'v2.002')
+        self.assertEqual(Sendcmd("more /home/root/mcu.log | grep 'Application Version:' | awk 'NR==1 {printf $9}'"),'v2.002')
     def testBLVersion(self):
-        self.assertIn('v1.04',Sendcmd("more mcu.log | grep 'Bootloader Version :' | awk 'NR==1 {printf $9}'"))
+        self.assertIn('v1.04',Sendcmd("more /home/root/mcu.log | grep 'Bootloader Version :' | awk 'NR==1 {printf $9}'"))
 class SDCardTest(unittest.TestCase):
     SDdetail = Sendcmd("df -Th | grep mmcblk0 | grep /dev/mmcblk0p2 | awk '{print $2,$3,$6}'")
     def testAvailPart(self):
@@ -99,6 +99,7 @@ class SDCardTest(unittest.TestCase):
         self.assertLess(int(average),3500)
         self.assertLess(int(maximum),3500)
     def testOutgoingEmpty(self):
+        Sendcmd('rm /media/sdcard/**/*')
         Sendcmd('rm /media/sdcard/outgoing/**/*')
         self.assertEqual(int(Sendcmd("ls -R /media/sdcard/outgoing/ | wc -l | awk {'printf $1'}")),25)
             

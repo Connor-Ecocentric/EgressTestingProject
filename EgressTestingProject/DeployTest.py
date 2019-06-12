@@ -36,11 +36,6 @@ class Collector():
         #SSH_Comms.SSH().SendCommand('rm N9C350B021801*')
         SSH_Comms.SSH().SendCommand('rm SMART_Tool_Sample_armabihf')        
         SSH_Comms.ssh.close()
-
-
-
-
-
     def ShutDown(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().SendCommand("./mcu-disable-always-on.sh")
@@ -65,7 +60,7 @@ class Collector():
 
 
 
-HostNames = ['10.0.0.96']
+HostNames = ['215.16.144.33']
 #HostNames = [
 #'215.16.144.144',
 #'215.16.144.145',
