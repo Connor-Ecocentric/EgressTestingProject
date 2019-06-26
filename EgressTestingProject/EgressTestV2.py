@@ -1,5 +1,6 @@
 # coding: utf-8
 import unittest
+import datetime
 import logging
 import sys
 import os
@@ -7,8 +8,8 @@ import subprocess
 from logging.handlers import TimedRotatingFileHandler
 FORMATTER = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s — %(message)s")
 LOG_FILE = "CollectorEgressTest.log"
-
-
+now = datetime.datetime.now()
+TIMESTAMP = now.strftime("%Y%m%d%H%M")
 def Sendcmd(cmd):
     try:
         result = subprocess.check_output(cmd, shell=True)
@@ -94,8 +95,9 @@ class SDCardTest(unittest.TestCase):
         self.assertEqual(len(Sendcmd("more /media/sdcard/config.ini | grep schema | awk '{printf $3}'")),0)    
         self.assertGreater(len(Sendcmd("more /media/sdcard/config.ini.default | grep schema | awk '{printf $3}'")),0)
     def testEndurance(self):
-        average = Sendcmd("./SMART_Tool_Sample_armabihf /dev/mmcblk0 | grep Erase | grep Average | awk '{print $4}'")
-        maximum = Sendcmd("./SMART_Tool_Sample_armabihf /dev/mmcblk0 | grep Erase | grep Maximum | awk '{print $4}'")
+        Sendcmd("/home/root/bin/SMART_Tool_Sample_armabihf /dev/mmcblk0 > /home/root/test/sdcard/SDinfo" + TIMESTAMP + ".txt")
+        average = Sendcmd("more /home/root/test/sdcard/SDinfo" + TIMESTAMP + ".txt | grep Erase | grep Average | awk '{print $4}' | sed -r \"s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g\"")
+        maximum = Sendcmd("more /home/root/test/sdcard/SDinfo" + TIMESTAMP + ".txt | grep Erase | grep Maximum | awk '{print $4}' | sed -r \"s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g\"")
         log.info("SdCard Average erase count: " + str(average))
         log.info("SdCard Maximum erase count: " + str(maximum))
         self.assertLess(int(average),3500)
@@ -106,20 +108,19 @@ class SDCardTest(unittest.TestCase):
         self.assertEqual(int(Sendcmd("ls -R /media/sdcard/outgoing/ | wc -l | awk {'printf $1'}")),25)
             
 class VoltageCalTest(unittest.TestCase):
-    Sendcmd("eco-feature-extract -e | tee calibration.txt")
-    P1gain = int(Sendcmd("more calibration.txt | grep 'port: 01' | awk {'printf $17'}"))
-    P2gain = int(Sendcmd("more calibration.txt | grep 'port: 02' | awk {'printf $17'}"))
-    P3gain = int(Sendcmd("more calibration.txt | grep 'port: 03' | awk {'printf $17'}"))
-    P4gain = int(Sendcmd("more calibration.txt | grep 'port: 04' | awk {'printf $17'}"))
-    P5gain = int(Sendcmd("more calibration.txt | grep 'port: 05' | awk {'printf $17'}"))
-    P6gain = int(Sendcmd("more calibration.txt | grep 'port: 06' | awk {'printf $17'}"))
-    P7gain = int(Sendcmd("more calibration.txt | grep 'port: 07' | awk {'printf $17'}"))
-    P8gain = int(Sendcmd("more calibration.txt | grep 'port: 08' | awk {'printf $17'}"))
-    P9gain = int(Sendcmd("more calibration.txt | grep 'port: 09' | awk {'printf $17'}"))
-    P10gain = int(Sendcmd("more calibration.txt | grep 'port: 10' | awk {'printf $17'}"))
-    P11gain = int(Sendcmd("more calibration.txt | grep 'port: 11' | awk {'printf $17'}"))
-    P12gain = int(Sendcmd("more calibration.txt | grep 'port: 12' | awk {'printf $17'}"))
-    Sendcmd("rm calibration.txt")
+    Sendcmd("eco-feature-extract -e | tee /home/root/test/calibration/calibration" + TIMESTAMP + ".txt")
+    P1gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 01' | awk {'printf $17'}"))
+    P2gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 02' | awk {'printf $17'}"))
+    P3gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 03' | awk {'printf $17'}"))
+    P4gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 04' | awk {'printf $17'}"))
+    P5gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 05' | awk {'printf $17'}"))
+    P6gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 06' | awk {'printf $17'}"))
+    P7gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 07' | awk {'printf $17'}"))
+    P8gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 08' | awk {'printf $17'}"))
+    P9gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 09' | awk {'printf $17'}"))
+    P10gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 10' | awk {'printf $17'}"))
+    P11gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 11' | awk {'printf $17'}"))
+    P12gain = int(Sendcmd("more /home/root/test/calibration/calibration" + TIMESTAMP + ".txt | grep 'port: 12' | awk {'printf $17'}"))
     CalibrationValues = [P1gain,P2gain,P3gain,P4gain,P5gain,P6gain,P7gain,P8gain,P9gain,P10gain,P11gain,P12gain]
     def testDuplicateValue(self):
         self.assertFalse(detect_duplicates(self.CalibrationValues)) 
@@ -157,6 +158,9 @@ class WifiTest(unittest.TestCase):
         self.assertGreaterEqual(float(Sendcmd("iw dev wlan0 station dump | grep signal | awk {'printf $2'}")),-70)
         log.info('wifi strength' + Sendcmd("iw dev wlan0 station dump | grep signal | awk {'printf $2'}"))
 class MemTest(unittest.TestCase):
+    def testMem(self):
+        self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+        self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c FAIL")),0)
     def testRam(self):
         self.assertGreater(Sendcmd("cat /proc/meminfo | grep 'MemTotal' | awk {'printf $2'}"),3850000)
 #class BITTest(unittest.TestCase):

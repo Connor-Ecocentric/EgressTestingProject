@@ -55,6 +55,7 @@ class SSH():
             err_log_all = stderr.read().decode()
             print(err_log_all)
             CommandInfo = CommandInfo.append({'Command_Sent': command, 'Response_Raw': response, 'Error_log': err_log_all, 'Message_log': out_log_all}, ignore_index=True)
+            return response
         except:
             print("fix this.... god damn")
 #            if stdout.channel.recv_ready():
