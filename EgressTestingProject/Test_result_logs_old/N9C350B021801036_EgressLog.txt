@@ -1,13 +1,13 @@
-.........................F.
+........................F..
 ======================================================================
-FAIL: testPythonDefaultGain (__main__.VoltageCalTest)
+FAIL: testDuplicateValue (__main__.VoltageCalTest)
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File "EgressTestV2.py", line 134, in testPythonDefaultGain
-    self.assertNotEqual(self.P10gain,GainL1)
-AssertionError: 1060083 == 1060083
+  File "EgressTestV2.py", line 123, in testDuplicateValue
+    self.assertFalse(detect_duplicates(self.CalibrationValues))
+AssertionError: True is not false
 
 ----------------------------------------------------------------------
-Ran 27 tests in 30.372s
+Ran 27 tests in 31.762s
 
 FAILED (failures=1)

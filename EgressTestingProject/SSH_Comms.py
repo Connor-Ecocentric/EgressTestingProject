@@ -56,11 +56,13 @@ class SSH():
             print(err_log_all)
             CommandInfo = CommandInfo.append({'Command_Sent': command, 'Response_Raw': response, 'Error_log': err_log_all, 'Message_log': out_log_all}, ignore_index=True)
         except:
-           out_log_all = stdout.read()
-           err_log_all = stderr.read()
-           print('Fatal Error, could not execute command error log: ' + err_log_all)          
-           print(response); 
-           return;
+            print("fix this.... god damn")
+#            if stdout.channel.recv_ready():
+ #               if len(strerr) > 0:
+  #               print (stderr.read())
+                   #print('Fatal Error, could not execute command error log: ' + err_log_all)          
+           #print(response); 
+            return;
     #%% Connect to host
     def Connect(self, hostname):
         try:

@@ -1,0 +1,13 @@
+......................F....
+======================================================================
+FAIL: testSha1sum (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "EgressTestV2.py", line 69, in testSha1sum
+    ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.test | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
+AssertionError: '02ae0aac5f2f5a905b5de3d92a07e7e1ed86c8c6' != 'd6f9fa02a42aa30a5d7ecd790403b0bab600c2ad'
+
+----------------------------------------------------------------------
+Ran 27 tests in 31.495s
+
+FAILED (failures=1)

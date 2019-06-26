@@ -1,0 +1,13 @@
+...........E...............
+======================================================================
+ERROR: testEndurance (__main__.SDCardTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "EgressTestV2.py", line 99, in testEndurance
+    self.assertLess(int(average),3500)
+ValueError: invalid literal for int() with base 10: ''
+
+----------------------------------------------------------------------
+Ran 27 tests in 29.819s
+
+FAILED (errors=1)

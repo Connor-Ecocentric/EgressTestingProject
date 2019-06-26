@@ -1,0 +1,13 @@
+.........................F.
+======================================================================
+FAIL: testPythonDefaultGain (__main__.VoltageCalTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "EgressTestV2.py", line 134, in testPythonDefaultGain
+    self.assertNotEqual(self.P10gain,GainL1)
+AssertionError: 1060083 == 1060083
+
+----------------------------------------------------------------------
+Ran 27 tests in 30.093s
+
+FAILED (failures=1)

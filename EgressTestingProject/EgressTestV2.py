@@ -48,6 +48,8 @@ class SerialNumTest(unittest.TestCase):
         self.assertEqual(Sendcmd("more /home/root/config.bak | grep client_id | awk '{printf $3}'"),self.Host)
     def testEprom(self):
         self.assertEqual(Sendcmd("eco-feature-extract -e | grep Serial | awk '{printf $4}'"),self.Host)
+    def testEcoListener(self):
+        self.assertIn(self.Host, Sendcmd(" more /media/sdcard/eco-listener.log | grep '\"client_id\": \"N9C350B021*' | awk END{'print $2'}"))
 class EEMCTest(unittest.TestCase):
     def testAvailPart(self):
         self.assertEqual(Sendcmd("fdisk -l | grep /dev/mmcblk1p | wc -l | awk {'printf $1'}"),'3')
