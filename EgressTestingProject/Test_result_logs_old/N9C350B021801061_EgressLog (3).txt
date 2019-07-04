@@ -1,0 +1,21 @@
+....E..F.....................
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 162, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testRTC (__main__.PeripheralsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 149, in testRTC
+    self.assertGreater(T2sec,T1sec)
+AssertionError: '01\n' not greater than '59\n'
+
+----------------------------------------------------------------------
+Ran 29 tests in 41.049s
+
+FAILED (failures=1, errors=1)

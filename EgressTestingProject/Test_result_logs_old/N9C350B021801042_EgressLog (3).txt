@@ -1,0 +1,21 @@
+....E.........F..............
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 162, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testRWspeed (__main__.SDCardTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 91, in testRWspeed
+    self.assertGreaterEqual(float(Sendcmd("hdparm -t /dev/mmcblk1 | awk '{printf $11}'")),68)
+AssertionError: 67.939999999999998 not greater than or equal to 68
+
+----------------------------------------------------------------------
+Ran 29 tests in 38.107s
+
+FAILED (failures=1, errors=1)
