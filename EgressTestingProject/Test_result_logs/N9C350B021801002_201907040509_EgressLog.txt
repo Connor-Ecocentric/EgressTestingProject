@@ -1,0 +1,29 @@
+....E...................F..F.
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 162, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testSha1sum (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 72, in testSha1sum
+    ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.test | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
+AssertionError: '594e8fdbda91c2f53999ab184fea4f98d24125b1' != 'd6f9fa02a42aa30a5d7ecd790403b0bab600c2ad'
+
+======================================================================
+FAIL: testPythonDefaultGain (__main__.VoltageCalTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 137, in testPythonDefaultGain
+    self.assertNotEqual(self.P10gain,GainL1)
+AssertionError: 1060083 == 1060083
+
+----------------------------------------------------------------------
+Ran 29 tests in 31.759s
+
+FAILED (failures=2, errors=1)

@@ -1,6 +1,9 @@
 import SSH_Comms
 import os
 import time
+import datetime
+now = datetime.datetime.now()
+TIMESTAMP = now.strftime("%Y%m%d")
 cwd = dir_path = os.path.dirname(os.path.realpath(__file__))
 CurrentVersion = 'v3.50.05.11'
 
@@ -19,7 +22,7 @@ class Collector():
 
         self.RemotePath1 = '/home/root/test'
         self.RemotePath2 = '/'
-        self.RemoteFile1 = '/home/root/N9C350B021801*'
+        self.RemoteFile1 = '/home/root/test/N9C350B021801*' + str(TIMESTAMP) + '*'
     def SendFile(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
         ### Check for logging directory ###
@@ -37,7 +40,6 @@ class Collector():
         
             SSH_Comms.SSH().sendSCP(self.TestFile, self.RemotePath1)
             SSH_Comms.SSH().sendDirectorySCP(self.LocalPath2, self.RemotePath1)
-            SSH_Comms.SSH().SendCommand('chmod 777 EgressTestV2.py')
             SSH_Comms.SSH().SendCommand("PATH=/usr/bin:/usr/local/bin:/sbin:/bin:/usr/sbin && python /home/root/test/EgressTestV2.py")
             print("Completed EgessTestV2")
             SSH_Comms.ssh.close()
@@ -50,9 +52,6 @@ class Collector():
     def GetFile(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
         SSH_Comms.SSH().getSCP(self.LocalPath1, self.RemoteFile1)
-        print("Completing final cleanup...... deleting log file and SMART tool file")
-        SSH_Comms.SSH().SendCommand('rm N9C350B021801*')
-        SSH_Comms.SSH().SendCommand('rm SMART_Tool_Sample_armabihf')      
         SSH_Comms.ssh.close()
     def ShutDown(self):
         SSH_Comms.SSH().Connect(self.CollectorIp)
@@ -83,20 +82,18 @@ class Collector():
         SSH_Comms.ssh.close()
 
 
+print("Enter Ip of collectors you wish to test as an array. eg. ['10.0.0.69']")
+for attempt in range(10):
+    try:
+        HostNames = input()
+    except:
+        print('Input incorrect, be sure to follow the suggested structure')
+    else:
+        break
+else:
+    print('FAIL!')
 
-HostNames = ['215.16.144.50',
-'215.16.144.37',
-'215.16.144.49',
-'215.16.144.50',
-'215.16.144.68',
-'215.16.144.73',
-'215.16.144.74',
-'215.16.144.80',
-'215.16.144.86',
-'215.16.144.93',
-'215.16.144.115',
-'215.16.144.121',
-'215.16.144.128',]
+   
 
           
 
@@ -111,7 +108,11 @@ if TransferType == 1:
     print("Sending Files to Collector Now......")
     for Host in HostNames:
         Collector().SendFile()
-       #time.sleep(5)
+    print(" All tests are now complete, after 20 Seconds all result files will be pulled")
+    time.sleep(20)
+    for Host in HostNames:
+        Collector().GetFile()
+    
        #Collector().GetFile()
 elif TransferType == 2:
     for Host in HostNames:
@@ -132,4 +133,6 @@ elif TransferType == 6:
         Collector().GetSDhealth()
         time.sleep(5)
         Collector().GetFile()
+else:
+    print("Input a valid number")
 

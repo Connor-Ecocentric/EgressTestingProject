@@ -169,11 +169,8 @@ class MemTest(unittest.TestCase):
 #        self.assertIn("testIdCtDetection",Sendcmd("more /home/root/BitLog.txt | grep FAIL"))
 #        Sendcmd('rm /home/root/BitLog.txt')
 
-TEST_FILE = Sendcmd("printf $HOSTNAME") + "_EgressLog.txt"
-a = 10
+TEST_FILE = "/home/root/test/" + Sendcmd("printf $HOSTNAME") + "_" + str(TIMESTAMP) + "_EgressLog.txt"
 log = get_logger("EgressLog")
-log.debug("this is a test")
-log.info(" another test" + str(a))
 if __name__ == '__main__': 
    with open(TEST_FILE, "w") as f:
        runner = unittest.TextTestRunner(f)
