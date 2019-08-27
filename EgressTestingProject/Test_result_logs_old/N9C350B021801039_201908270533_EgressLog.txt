@@ -1,0 +1,13 @@
+....E........................
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 163, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c FAIL")),0)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+----------------------------------------------------------------------
+Ran 29 tests in 39.037s
+
+FAILED (errors=1)

@@ -1,0 +1,37 @@
+....F..F..............F.F....
+======================================================================
+FAIL: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 162, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+AssertionError: 14 != 7
+
+======================================================================
+FAIL: testRTC (__main__.PeripheralsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 149, in testRTC
+    self.assertGreater(T2sec,T1sec)
+AssertionError: '00\n' not greater than '58\n'
+
+======================================================================
+FAIL: testEcoversion (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 76, in testEcoversion
+    self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{print $1}'"),Sendcmd("sha1sum /run/media/mmcblk1p2/eco-overlay.tar.gz | awk '{print$1}'"))
+AssertionError: 'a2f9e59b4f58f751f3dc2f6b376430e2762a46b4\n' != ''
+
+======================================================================
+FAIL: testSha1sum (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 72, in testSha1sum
+    ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.test | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
+AssertionError: '01aee2ab82dae1d8e6350a69385bcb3a03024852' != 'd6f9fa02a42aa30a5d7ecd790403b0bab600c2ad'
+
+----------------------------------------------------------------------
+Ran 29 tests in 37.296s
+
+FAILED (failures=4)

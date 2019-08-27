@@ -23,17 +23,17 @@ class Collector():
         self.RemotePath1 = '/home/root/test'
         self.RemotePath2 = '/'
         self.RemoteFile1 = '/home/root/test/N9C350B021801*' + str(TIMESTAMP) + '*'
-    def SendFile(self):
+    def SendFile(self): 
         SSH_Comms.SSH().Connect(self.CollectorIp)
         ### Check for logging directory ###
-        DirTest = int(SSH_Comms.SSH().SendCommand("ls /home/root | grep -c test | awk {'printf $1'}"))
-        if  DirTest < 1: 
+        DirTest = SSH_Comms.SSH().SendCommand("ls /home/root")
+        if  "\ntest" not in DirTest: 
             SSH_Comms.SSH().SendCommand("mkdir /home/root/test; mkdir /home/root/test/mem; mkdir /home/root/test/sdcard; mkdir /home/root/test/calibration")
             print("'Test' directory did not exist, i has now been created in the /home/root path")
             SSH_Comms.ssh.close()
             time.sleep(1)
             self.SendFile()
-        elif DirTest == 1:
+        elif "\ntest" in DirTest:
             print("All logging folders already exist, proceeding to deploy test")
 
         ### Send and Commence Testing ###
@@ -85,7 +85,14 @@ class Collector():
 print("Enter Ip of collectors you wish to test as an array. eg. ['10.0.0.69']")
 for attempt in range(10):
     try:
-        HostNames = input()
+        HostNames = ["215.16.144.58",
+        "215.16.144.60",
+        "215.16.144.46",
+        "215.16.144.52",
+        "215.16.144.71",
+        "215.16.144.82",
+        "215.16.144.91",
+        "215.16.144.123"]# input()
     except:
         print('Input incorrect, be sure to follow the suggested structure')
     else:

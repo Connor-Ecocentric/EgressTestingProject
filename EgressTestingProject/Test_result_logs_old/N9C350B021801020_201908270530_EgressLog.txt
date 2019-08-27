@@ -1,0 +1,29 @@
+...FE...................F....
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 162, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testRWSpeed (__main__.EEMCTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 64, in testRWSpeed
+    self.assertGreater(float(Sendcmd("hdparm -t /dev/mmcblk0 | awk '{printf $11}'")),16)
+AssertionError: 14.970000000000001 not greater than 16
+
+======================================================================
+FAIL: testSha1sum (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 69, in testSha1sum
+    EcoOverlay = self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/eco-overlay* | awk '{printf $1}'"))
+AssertionError: 'a2f9e59b4f58f751f3dc2f6b376430e2762a46b4' != ''
+
+----------------------------------------------------------------------
+Ran 29 tests in 42.062s
+
+FAILED (failures=2, errors=1)

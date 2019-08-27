@@ -66,9 +66,9 @@ class VersionTest(unittest.TestCase):
     def testSha1sum(self):
         Sendcmd("cp /media/sdcard/config.ini /media/sdcard/config.ini.test")
         Sendcmd("sed -i 's/^client_id.*/client_id                         = N9C350B021801000/g' /media/sdcard/config.ini.test;sed -i 's/^client_secret.*/client_secret                     = 2157c540-64ae-11e8-bc00-7169bce88218/g' /media/sdcard/config.ini.test")
-        EcoOverlay = self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/eco-overlay* | awk '{printf $1}'"))
-        EcoFeature = self.assertEqual(Sendcmd("sha1sum /usr/bin/eco-feature-extract | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/eco-feature* | awk '{printf $1}'"))
-        RawStreamer = self.assertEqual(Sendcmd("sha1sum /usr/bin/raw-streamer | awk '{printf $1}'"),Sendcmd("more /home/root/signatures/raw-streamer* | awk '{printf $1}'"))
+        EcoOverlay = self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/eco-overlay* | awk '{printf $1}'"))
+        EcoFeature = self.assertEqual(Sendcmd("sha1sum /usr/bin/eco-feature-extract | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/eco-feature* | awk '{printf $1}'"))
+        RawStreamer = self.assertEqual(Sendcmd("sha1sum /usr/bin/raw-streamer | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/raw-streamer* | awk '{printf $1}'"))
         ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.test | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
         ConfigDefault = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.default | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini.default | awk '{printf $1}'"))
         Sendcmd("rm /media/sdcard/config.ini.test")

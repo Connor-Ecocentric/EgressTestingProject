@@ -1,0 +1,29 @@
+....E..............F....F....
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 163, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c FAIL")),0)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testEcoListener (__main__.SerialNumTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 53, in testEcoListener
+    self.assertIn(self.Host, Sendcmd(" more /media/sdcard/eco-listener.log | grep '\"client_id\": \"N9C350B021*' | awk END{'print $2'}"))
+AssertionError: 'N9C350B021801091' not found in '\n'
+
+======================================================================
+FAIL: testSha1sum (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 72, in testSha1sum
+    ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.test | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
+AssertionError: '01aee2ab82dae1d8e6350a69385bcb3a03024852' != 'd6f9fa02a42aa30a5d7ecd790403b0bab600c2ad'
+
+----------------------------------------------------------------------
+Ran 29 tests in 36.575s
+
+FAILED (failures=2, errors=1)

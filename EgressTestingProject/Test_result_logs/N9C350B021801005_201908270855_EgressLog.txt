@@ -1,0 +1,29 @@
+....E.......F.........F......
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 163, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c FAIL")),0)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testEndurance (__main__.SDCardTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 103, in testEndurance
+    self.assertLess(int(average),3500)
+AssertionError: 6474 not less than 3500
+
+======================================================================
+FAIL: testEcoversion (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTestV2.py", line 76, in testEcoversion
+    self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{print $1}'"),Sendcmd("sha1sum /run/media/mmcblk1p2/eco-overlay.tar.gz | awk '{print$1}'"))
+AssertionError: 'a2f9e59b4f58f751f3dc2f6b376430e2762a46b4\n' != ''
+
+----------------------------------------------------------------------
+Ran 29 tests in 36.943s
+
+FAILED (failures=2, errors=1)
