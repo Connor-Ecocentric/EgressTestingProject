@@ -11,8 +11,8 @@ CurrentVersion = 'v3.50.05.11'
 
 class Collector():
     def __init__(self):
+        #self.CollectorIp = Host
         self.CollectorIp = Host
-        #self.CollectorIp = ('10.0.0.96')
         self.LocalPath1 = (cwd + "\\Test_result_logs")#, '\Test_result_logs\\')
         self.LocalPath2 = (cwd + "\\Signature Folders\\" + CurrentVersion + "\\signatures")
         self.LocalPath3 = (cwd + "\\SDTest_result_logs")
@@ -26,14 +26,14 @@ class Collector():
     def SendFile(self): 
         SSH_Comms.SSH().Connect(self.CollectorIp)
         ### Check for logging directory ###
-        DirTest = SSH_Comms.SSH().SendCommand("ls /home/root")
-        if  "\ntest" not in DirTest: 
+        DirTest = SSH_Comms.SSH().SendCommand("ls -l /home/root/ | grep test | awk '{printf $9}'")
+        if  "test" not in DirTest: 
             SSH_Comms.SSH().SendCommand("mkdir /home/root/test; mkdir /home/root/test/mem; mkdir /home/root/test/sdcard; mkdir /home/root/test/calibration")
-            print("'Test' directory did not exist, i has now been created in the /home/root path")
+            print("'Test' directory did not exist, it has now been created in the /home/root path")
             SSH_Comms.ssh.close()
             time.sleep(1)
             self.SendFile()
-        elif "\ntest" in DirTest:
+        elif "test" in DirTest:
             print("All logging folders already exist, proceeding to deploy test")
 
         ### Send and Commence Testing ###
@@ -81,34 +81,29 @@ class Collector():
         SSH_Comms.SSH().SendCommand("rm /home/root/ConfigFix.sh")
         SSH_Comms.ssh.close()
 
-
-print("Enter Ip of collectors you wish to test as an array. eg. ['10.0.0.69']")
-for attempt in range(10):
-    try:
-        HostNames = ["215.16.144.58",
-        "215.16.144.60",
-        "215.16.144.46",
-        "215.16.144.52",
-        "215.16.144.71",
-        "215.16.144.82",
-        "215.16.144.91",
-        "215.16.144.123"]# input()
-    except:
-        print('Input incorrect, be sure to follow the suggested structure')
+def notsure():
+    print("Enter Ip of collectors you wish to test as an array. eg. ['10.0.0.69']")
+    for attempt in range(10):
+        try:
+            HostNames = ["215.16.144.58",
+            "215.16.144.60",
+            "215.16.144.46",
+            "215.16.144.52",
+            "215.16.144.71",
+            "215.16.144.82",
+            "215.16.144.91",
+            "215.16.144.123"]# input()
+        except:
+            print('Input incorrect, be sure to follow the suggested structure')
+        else:
+            break
     else:
-        break
-else:
-    print('FAIL!')
+        print('FAIL!')
 
-   
-
-          
-
-
-
-        
-
-# Main loop, Depending on user input the scrip will either send or recieve a egress testing file. 
+HostNames = [
+    '10.0.0.53'
+]
+# Main loop, Depending on user input the script will either send or recieve a egress testing file. 
 print("Select Action \n 1. Send Egress.sh to collector \n 2. Recieve test output from collector \n 3. Shutdown Collector \n 4. Fix the serial number in EEPROM \n 5. Fix the config.ini and config.ini.default \n 6. SDHealth")        
 TransferType = int(input())    
 if TransferType == 1:

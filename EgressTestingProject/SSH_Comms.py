@@ -76,8 +76,7 @@ class SSH():
     
         except:
             print("could not connect to %s" % hostname)
-   
-        return;
+            return;
 
     #%% Progress for file transfer
     def progress(filename, size, sent):

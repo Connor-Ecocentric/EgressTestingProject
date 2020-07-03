@@ -62,6 +62,11 @@ class EEMCTest(unittest.TestCase):
         self.assertIn('b311h',Sendcmd("stat / | grep Device | awk '{printf $2}'"))
     def testRWSpeed(self):
         self.assertGreater(float(Sendcmd("hdparm -t /dev/mmcblk0 | awk '{printf $11}'")),16)
+    def testAvailSpaceRoot(self):
+        self.assertLess(int(Sendcmd("df -h | grep root | awk '{print $5}'").replace('%','')),90)
+    def testLoggingDir(self):
+        self.assertEqual(Sendcmd("ls -l /var/ | grep log | awk '{printf $11}'"), "volatile/log")
+
 class VersionTest(unittest.TestCase):
     def testSha1sum(self):
         Sendcmd("cp /media/sdcard/config.ini /media/sdcard/config.ini.test")
@@ -69,16 +74,18 @@ class VersionTest(unittest.TestCase):
         EcoOverlay = self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/eco-overlay* | awk '{printf $1}'"))
         EcoFeature = self.assertEqual(Sendcmd("sha1sum /usr/bin/eco-feature-extract | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/eco-feature* | awk '{printf $1}'"))
         RawStreamer = self.assertEqual(Sendcmd("sha1sum /usr/bin/raw-streamer | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/raw-streamer* | awk '{printf $1}'"))
+        CheckCounter = self.assertEqual(Sendcmd("sha1sum /root/checkCounter.sh | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/checkCounter* | awk '{printf $1}'"))
+        CheckWanup = self.assertEqual(Sendcmd("sha1sum /root/checkwanup.sh | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/checkwanup* | awk '{printf $1}'")) 
         ConfgIni = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.test | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini | awk '{printf $1}'"))
         ConfigDefault = self.assertEqual(Sendcmd("sha1sum /media/sdcard/config.ini.default | awk '{printf $1}'"),Sendcmd("sha1sum /home/root/config/config.ini.default | awk '{printf $1}'"))
         Sendcmd("rm /media/sdcard/config.ini.test")
     def testEcoversion(self):
         self.assertEqual(Sendcmd("sha1sum /eco-overlay.tar.gz | awk '{print $1}'"),Sendcmd("sha1sum /run/media/mmcblk1p2/eco-overlay.tar.gz | awk '{print$1}'"))
-    def testMCUVersion(self):
-        Sendcmd("rm mcu.log; ./microBootloaderVersion.sh; ./microResetOnly.sh")
-        self.assertEqual(Sendcmd("more /home/root/mcu.log | grep 'Application Version:' | awk 'NR==1 {printf $9}'"),'v2.002')
-    def testBLVersion(self):
-        self.assertIn('v1.04',Sendcmd("more /home/root/mcu.log | grep 'Bootloader Version :' | awk 'NR==1 {printf $9}'"))
+    #def testMCUVersion(self):
+    #   Sendcmd("rm mcu.log; ./microBootloaderVersion.sh; ./microResetOnly.sh")
+    #    self.assertEqual(Sendcmd("more /home/root/mcu.log | grep 'Application Version:' | awk 'NR==1 {printf $9}'"),'v2.002')
+    #def testBLVersion(self):
+    #    self.assertIn('v1.04',Sendcmd("more /home/root/mcu.log | grep 'Bootloader Version :' | awk 'NR==1 {printf $9}'"))
 class SDCardTest(unittest.TestCase):
     SDdetail = Sendcmd("df -Th | grep mmcblk0 | grep /dev/mmcblk0p2 | awk '{print $2,$3,$6}'")
     def testAvailPart(self):
@@ -103,8 +110,8 @@ class SDCardTest(unittest.TestCase):
         self.assertLess(int(average),3500)
         self.assertLess(int(maximum),3500)
     def testOutgoingEmpty(self):
-        Sendcmd('rm /media/sdcard/**/*')
-        Sendcmd('rm /media/sdcard/outgoing/**/*')
+        #Sendcmd('rm /media/sdcard/*.log*')
+        Sendcmd('rm /media/sdcard/outgoing/**/*; rm /media/sdcard/outgoing/*.gz')
         self.assertEqual(int(Sendcmd("ls -R /media/sdcard/outgoing/ | wc -l | awk {'printf $1'}")),25)
             
 class VoltageCalTest(unittest.TestCase):
@@ -151,7 +158,10 @@ class PeripheralsTest(unittest.TestCase):
         self.assertGreater(int(Sendcmd('lsusb | grep Marvell | wc -l')),0)
     def testPCI(self):
         self.assertGreater(int(Sendcmd('lspci | grep Marvell | wc -l')),0)
-    
+    def testBootDelay(self):
+        self.assertEqual(Sendcmd("fw_printenv bootdelay | awk '{printf $1}'"),'bootdelay=-2')
+    def testSecondCoreShutdown(self):
+        self.assertNotIn("#", Sendcmd("sed '5,6!d' /root/reduceTemperature.sh"))
 
 class WifiTest(unittest.TestCase):
     def testLinkQual(self):

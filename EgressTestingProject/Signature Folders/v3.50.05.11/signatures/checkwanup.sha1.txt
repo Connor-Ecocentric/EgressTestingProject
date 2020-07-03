@@ -1,0 +1,1 @@
+1777b4087aa628110306771ce3cae5f06c0d61de  /root/checkwanup.sh
