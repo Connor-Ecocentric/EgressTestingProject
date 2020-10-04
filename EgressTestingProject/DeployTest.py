@@ -101,7 +101,7 @@ def notsure():
         print('FAIL!')
 
 HostNames = [
-    '10.0.0.53'
+    '215.16.144.163'
 ]
 # Main loop, Depending on user input the script will either send or recieve a egress testing file. 
 print("Select Action \n 1. Send Egress.sh to collector \n 2. Recieve test output from collector \n 3. Shutdown Collector \n 4. Fix the serial number in EEPROM \n 5. Fix the config.ini and config.ini.default \n 6. SDHealth")        
