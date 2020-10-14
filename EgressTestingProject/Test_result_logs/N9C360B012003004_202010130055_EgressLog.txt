@@ -1,0 +1,69 @@
+....FE..F...FF.....F..F..F.
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 174, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testPartSize (__main__.EEMCTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 60, in testPartSize
+    self.assertEqual(p1,p2)
+AssertionError: '5.9G' != '6G'
+
+======================================================================
+FAIL: testPCI (__main__.PeripheralsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 162, in testPCI
+    self.assertGreater(int(Sendcmd('lspci | grep Marvell | wc -l')),0)
+AssertionError: 0 not greater than 0
+
+======================================================================
+FAIL: testUSB (__main__.PeripheralsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 160, in testUSB
+    self.assertGreater(int(Sendcmd('lsusb | grep Marvell | wc -l')),0)
+AssertionError: 0 not greater than 0
+
+======================================================================
+FAIL: testAvailPart (__main__.SDCardTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 94, in testAvailPart
+    self.assertEqual(Sendcmd("fdisk -l | grep mmcblk0p | wc -l | awk {'printf $1'}"),'3')
+AssertionError: '0' != '3'
+
+======================================================================
+FAIL: testEcoListener (__main__.SerialNumTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 53, in testEcoListener
+    self.assertIn(self.Host, Sendcmd("more /media/sdcard/eco-listener.log | grep '\"client_id\": \"N9C360B012003*' | awk END{'print $2'}"))
+AssertionError: 'N9C360B012003004' not found in '\n'
+
+======================================================================
+FAIL: testSha1sum (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 75, in testSha1sum
+    EcoFeature = self.assertEqual(Sendcmd("sha1sum /usr/bin/eco-feature-extract | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/eco-feature* | awk '{printf $1}'"))
+AssertionError: '8f61a95bb7ea40e780d983595e7dee125541a3ea' != '::::::::::::::/home/root/test/signatures/eco-feature-extract.sha1.txt::::::::::::::51a6eae15eebe79ee38a62cf1341e192fccd599e'
+
+======================================================================
+FAIL: testPythonDefaultGain (__main__.VoltageCalTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 146, in testPythonDefaultGain
+    self.assertNotEqual(self.P10gain,GainL1)
+AssertionError: 1060083 == 1060083
+
+----------------------------------------------------------------------
+Ran 27 tests in 9.591s
+
+FAILED (failures=7, errors=1)

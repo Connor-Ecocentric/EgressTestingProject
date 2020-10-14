@@ -1,0 +1,1 @@
+3e7cb819778d5efe32530becdbd67f4bd966e8fc  /root/tempfan.sh

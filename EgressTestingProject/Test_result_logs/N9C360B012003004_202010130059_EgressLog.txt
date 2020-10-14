@@ -1,0 +1,61 @@
+....FE..FF......F.....F..F.
+======================================================================
+ERROR: testMem (__main__.MemTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 174, in testMem
+    self.assertEqual(int(Sendcmd("more /home/root/test/mem/mem*.txt | grep -c ': ok'")),7)
+TypeError: int() argument must be a string or a number, not 'NoneType'
+
+======================================================================
+FAIL: testPartSize (__main__.EEMCTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 60, in testPartSize
+    self.assertEqual(p1,p2)
+AssertionError: '5.9G' != '6G'
+
+======================================================================
+FAIL: testPCI (__main__.PeripheralsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 162, in testPCI
+    self.assertGreater(int(Sendcmd('lspci | grep Marvell | wc -l')),0)
+AssertionError: 0 not greater than 0
+
+======================================================================
+FAIL: testRTC (__main__.PeripheralsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 158, in testRTC
+    self.assertGreater(T2sec,T1sec)
+AssertionError: '01\n' not greater than '59\n'
+
+======================================================================
+FAIL: testRWspeed (__main__.SDCardTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 100, in testRWspeed
+    self.assertGreaterEqual(float(Sendcmd("hdparm -t /dev/mmcblk1 | awk '{printf $11}'")),68)
+AssertionError: 67.069999999999993 not greater than or equal to 68
+
+======================================================================
+FAIL: testSha1sum (__main__.VersionTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 75, in testSha1sum
+    EcoFeature = self.assertEqual(Sendcmd("sha1sum /usr/bin/eco-feature-extract | awk '{printf $1}'"),Sendcmd("more /home/root/test/signatures/eco-feature* | awk '{printf $1}'"))
+AssertionError: '8f61a95bb7ea40e780d983595e7dee125541a3ea' != '::::::::::::::/home/root/test/signatures/eco-feature-extract.sha1.txt::::::::::::::51a6eae15eebe79ee38a62cf1341e192fccd599e'
+
+======================================================================
+FAIL: testPythonDefaultGain (__main__.VoltageCalTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/root/test/EgressTest-sdk-05.py", line 146, in testPythonDefaultGain
+    self.assertNotEqual(self.P10gain,GainL1)
+AssertionError: 1060083 == 1060083
+
+----------------------------------------------------------------------
+Ran 27 tests in 10.004s
+
+FAILED (failures=6, errors=1)

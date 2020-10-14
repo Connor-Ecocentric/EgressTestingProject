@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter.ttk import *
 from tkinter import messagebox
+from tkinter import filedialog as fd
 import os
 import threading
 import time
@@ -14,80 +15,90 @@ import datetime
 now = datetime.datetime.now()
 TIMESTAMP = now.strftime("%Y%m%d")
 cwd = dir_path = os.path.dirname(os.path.realpath(__file__))
-CurrentVersion = 'v3.50.05.11'
+CurrentVersion = 'v3.50.06.04-sdk-05'
 
 
 class Collector():
+
     def __init__(self):
         #self.CollectorIp = Host
-        #self.CollectorIp = Host
+        if "sdk-03" in CurrentVersion:
+            self.RemoteTest = ('/home/root/test/EgressTest-sdk-03.py')
+            self.TestFile = ("%s%s") % (cwd,'\\EgressTest-sdk-03.py')
+            self.RemoteFile1 = '/home/root/test/N9C350B021801*' + str(TIMESTAMP) + '*'
+        elif "sdk-05" in CurrentVersion:
+            self.RemoteTest = ('/home/root/test/EgressTest-sdk-05.py')
+            self.TestFile = ("%s%s") % (cwd,'\\EgressTest-sdk-05.py')
+            self.RemoteFile1 = '/home/root/test/N9C360B012003*' + str(TIMESTAMP) + '*'
+        else:
+            print("select correct OS version")
+
         self.LocalPath1 = (cwd + "\\Test_result_logs")#, '\Test_result_logs\\')
         self.LocalPath2 = (cwd + "\\Signature Folders\\" + CurrentVersion + "\\signatures")
         self.LocalPath3 = (cwd + "\\SDTest_result_logs")
         self.LocalFile1 = ("%s%s") % (cwd,'\\eco-feature-extract-serial-write')
         self.LocalFile2 = ("%s%s") % (cwd, '\\Collector_Files\\ConfigFix.sh')
-        self.TestFile = ("%s%s") % (cwd,'\\EgressTestV2.py')
-
         self.RemotePath1 = '/home/root/test'
         self.RemotePath2 = '/'
-        self.RemoteFile1 = '/home/root/test/N9C350B021801*' + str(TIMESTAMP) + '*'
-    def SendFile(self, ip): 
-        SSH_Comms.SSH().Connect(ip)#(self.CollectorIp)
+        self.sshComms = SSH_Comms.SSH()
+    def SendFile(self, CollectorIp): 
+        self.sshComms.Connect(CollectorIp)
         ### Check for logging directory ###
-        DirTest = SSH_Comms.SSH().SendCommand("ls -l /home/root/ | grep test | awk '{printf $9}'")
+        DirTest = self.sshComms.SendCommand("ls -l /home/root/ | grep test | awk '{printf $9}'")
         if  "test" not in DirTest: 
-            SSH_Comms.SSH().SendCommand("mkdir /home/root/test; mkdir /home/root/test/mem; mkdir /home/root/test/sdcard; mkdir /home/root/test/calibration")
+            self.sshComms.SendCommand("mkdir /home/root/test; mkdir /home/root/test/mem; mkdir /home/root/test/sdcard; mkdir /home/root/test/calibration")
             print("'Test' directory did not exist, it has now been created in the /home/root path")
             SSH_Comms.ssh.close()
             time.sleep(1)
-            self.SendFile(ip)
+            self.SendFile()
         elif "test" in DirTest:
             print("All logging folders already exist, proceeding to deploy test")
 
         ### Send and Commence Testing ###
         
-            SSH_Comms.SSH().sendSCP(self.TestFile, self.RemotePath1)
-            SSH_Comms.SSH().sendDirectorySCP(self.LocalPath2, self.RemotePath1)
-            SSH_Comms.SSH().SendCommand("PATH=/usr/bin:/usr/local/bin:/sbin:/bin:/usr/sbin && python /home/root/test/EgressTestV2.py")
+            self.sshComms.sendSCP(self.TestFile, self.RemotePath1)
+            self.sshComms.sendDirectorySCP(self.LocalPath2, self.RemotePath1)
+            self.sshComms.SendCommand("PATH=/usr/bin:/usr/local/bin:/sbin:/bin:/usr/sbin && python " + self.RemoteTest)
             print("Completed EgessTestV2")
             SSH_Comms.ssh.close()
             return
-    def GetSDhealth(self): 
-        SSH_Comms.SSH().Connect(self.CollectorIp)
-        SSH_Comms.SSH().SendCommand('/home/root/bin/SMART_Tool_Sample_armabihf /dev/mmcblk0 > $HOSTNAME.txt')
+    def GetSDhealth(self,CollectorIp): 
+        self.sshComms.Connect(CollectorIp)
+        self.sshComms.SendCommand('/home/root/bin/SMART_Tool_Sample_armabihf /dev/mmcblk0 > $HOSTNAME.txt')
         SSH_Comms.ssh.close()
 
-    def GetFile(self, ip):
-        SSH_Comms.SSH().Connect(ip)#(self.CollectorIp)
-        SSH_Comms.SSH().getSCP(self.LocalPath1, self.RemoteFile1)
+    def GetFile(self,CollectorIp,directory):
+        self.sshComms.Connect(CollectorIp)
+        self.sshComms.getSCP(directory, self.RemoteFile1)
         SSH_Comms.ssh.close()
-    def ShutDown(self):
-        SSH_Comms.SSH().Connect(self.CollectorIp)
-        SSH_Comms.SSH().SendCommand("./mcu-disable-always-on.sh")
-        SSH_Comms.SSH().SendCommand("sync; shutdown -P -t now")
+    def ShutDown(self,CollectorIp):
+        self.sshComms.Connect(CollectorIp)
+        self.sshComms.SendCommand("./mcu-disable-always-on.sh")
+        self.sshComms.SendCommand("sync; shutdown -P -t now")
         SSH_Comms.ssh.close()
-    def SerialFix(self):
-        SSH_Comms.SSH().Connect(self.CollectorIp)
-        SSH_Comms.SSH().sendSCP(self.LocalFile1, self.RemotePath2)
-        SSH_Comms.SSH().SendCommand("chmod 777 /eco-feature-extract-serial-write")
-        SSH_Comms.SSH().SendCommand("/eco-feature-extract-serial-write -s $HOSTNAME")
-        SSH_Comms.SSH().SendCommand("rm /eco-feature-ectract-serial-write")
+    def SerialFix(self,CollectorIp):
+        self.sshComms.Connect(CollectorIp)
+        self.sshComms.sendSCP(self.LocalFile1, self.RemotePath2)
+        self.sshComms.SendCommand("chmod 777 /eco-feature-extract-serial-write")
+        self.sshComms.SendCommand("/eco-feature-extract-serial-write -s $HOSTNAME")
+        self.sshComms.SendCommand("rm /eco-feature-ectract-serial-write")
         SSH_Comms.ssh.close()
-    def ConfigFix(self):
-        SSH_Comms.SSH().Connect(self.CollectorIp)
-        SSH_Comms.SSH().sendSCP(self.LocalFile2, self.RemotePath1)
-        SSH_Comms.SSH().SendCommand("tr -d '\r' <ConfigFix.sh >ConfigFix.sh.new && mv ConfigFix.sh.new ConfigFix.sh")
-        SSH_Comms.SSH().SendCommand("chmod 755 /home/root/ConfigFix.sh")
-        SSH_Comms.SSH().SendCommand("/home/root/ConfigFix.sh")
-        SSH_Comms.SSH().SendCommand("rm /home/root/ConfigFix.sh")
+    def ConfigFix(self,CollectorIp):
+        self.sshComms.Connect(CollectorIp)
+        self.sshComms.sendSCP(self.LocalFile2, self.RemotePath1)
+        self.sshComms.SendCommand("tr -d '\r' <ConfigFix.sh >ConfigFix.sh.new && mv ConfigFix.sh.new ConfigFix.sh")
+        self.sshComms.SendCommand("chmod 755 /home/root/ConfigFix.sh")
+        self.sshComms.SendCommand("/home/root/ConfigFix.sh")
+        self.sshComms.SendCommand("rm /home/root/ConfigFix.sh")
         SSH_Comms.ssh.close()
-    def UptimeCheck(self):
-        SSH_Comms.SSH().Connect(self.CollectorIp)
-        SSH_Comms.SSH().SendCommand("tr -d '\r' <ConfigFix.sh >ConfigFix.sh.new && mv ConfigFix.sh.new ConfigFix.sh")
-        SSH_Comms.SSH().SendCommand("chmod 755 /home/root/ConfigFix.sh")
-        SSH_Comms.SSH().SendCommand("/home/root/ConfigFix.sh")
-        SSH_Comms.SSH().SendCommand("rm /home/root/ConfigFix.sh")
+    def UptimeCheck(self,CollectorIp):
+        self.sshComms.Connect(CollectorIp)
+        self.sshComms.SendCommand("tr -d '\r' <ConfigFix.sh >ConfigFix.sh.new && mv ConfigFix.sh.new ConfigFix.sh")
+        self.sshComms.SendCommand("chmod 755 /home/root/ConfigFix.sh")
+        self.sshComms.SendCommand("/home/root/ConfigFix.sh")
+        self.sshComms.SendCommand("rm /home/root/ConfigFix.sh")
         SSH_Comms.ssh.close()
+
 
 class IpScanner():
     def __init__(self):
@@ -133,26 +144,47 @@ class windowOne():
         self.master = master # window
         self.scan = IpScanner()
         self.egress = Collector()
+        self.directory = ""
         master.title("Egress Testing App")
-        master.geometry('700x400')
+        master.geometry('1000x500')
 
-        self.button1 = tk.Button(master,text='Scan IP for connected Collectors', command=self.ipscan)
+        self.button1 = tk.Button(master,text='Start scan', command=self.ipscan)
         self.button1.grid(column=2,row=0)
 
-        self.button2 = tk.Button(master,text='Send egress test to selected Collector', command=self.clicked)
-        self.button2.grid(column=2,row=1)
+        self.button2 = tk.Button(master,text='Start test', command=self.clicked)
+        self.button2.grid(column=2,row=2)
 
+        self.button3 = tk.Button(master,text='Select directory', command=self.opendirectory)
+        self.button3.grid(column=2,row=1)
+
+        self.button3 = tk.Button(master,text='Select file', command=self.openfile)
+        self.button3.grid(column=2,row=3)
         #self.entry1 = tk.Entry(master,width = 10)
         #self.entry1.grid(column=1,row=0)
 
         #self.label1 = tk.Label(master, text="Input IP range to scan if blank default = 215.16.144.")
         #self.label1.grid(column=0,row=0)
-        
-        self.label2 = tk.Label(master, text="Scanned Collector IP's")
+        self.label1 = tk.Label(master, text="1. Scan LAN for available collectors")
+        self.label1.grid(column=0,row=0)
+
+        self.label2 = tk.Label(master, text="2. Select directory to write result files to")
         self.label2.grid(column=0,row=1)
 
-        self.combo1 = tk.ttk.Combobox(master); self.combo1['values']= ["nothing"]
-        self.combo1.grid(column=1,row=1)
+        self.label3 = tk.Label(master, text="3. Select collector IP to send egress to")
+        self.label3.grid(column=0,row=2)
+
+        self.label4 = tk.Label(master, text="4. View result file")
+        self.label4.grid(column=0,row=3)
+
+        self.label5 = tk.Label(master, text="Activity monitor")
+        self.label5.grid(column=3,row=0)
+
+        self.combo1 = tk.ttk.Combobox(master); self.combo1['values']= ["Please scan for ip first"]
+        self.combo1.grid(column=1,row=2)
+
+        self.text1 = tk.Text(master, height=10, width=60)
+        self.text1.grid(column=3,row=1, rowspan = 10)
+        self.text1.insert(tk.END, "Activity log")
 
 
     def clicked(self):
@@ -160,8 +192,20 @@ class windowOne():
         self.egress.SendFile(ip)
         print(" All tests are now complete, after 20 Seconds all result files will be pulled")
         time.sleep(20)
-        self.egress.GetFile(ip)    # Collector().GetFile()
+        self.egress.GetFile(ip,self.directory)    # Collector().GetFile()
         #messagebox.showinfo('This is a popup', str(value))
+
+    def opendirectory(self):
+        name = fd.askdirectory()
+        self.directory = name
+        self.text1.insert(tk.END, "directory" + self.directory)
+
+
+    def openfile(self):
+        filename = fd.askopenfilename( initialdir=self.directory, title="select file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
+        if filename != "":
+            os.system(r"notepad.exe " + filename)
+
 
     def ipscan(self):
         address = self.scan.main()
