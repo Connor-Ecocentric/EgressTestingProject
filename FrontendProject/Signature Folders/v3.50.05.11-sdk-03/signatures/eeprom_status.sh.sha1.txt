@@ -1,0 +1,1 @@
+fe7b4db439533773c42d9950bf6cf0f7197d08d5  eco-overlay/home/root/bin/eeprom_status.sh

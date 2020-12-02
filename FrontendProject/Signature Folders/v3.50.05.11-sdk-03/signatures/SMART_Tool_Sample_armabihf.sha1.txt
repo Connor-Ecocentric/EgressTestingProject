@@ -1,0 +1,1 @@
+b59efa9bb97884eb9364979cd7bba96277f447fe  eco-overlay/home/root/bin/SMART_Tool_Sample_armabihf
