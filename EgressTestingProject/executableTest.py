@@ -50,7 +50,7 @@ class Collector():
             print("'Test' directory did not exist, it has now been created in the /home/root path")
             SSH_Comms.ssh.close()
             time.sleep(1)
-            self.SendFile()
+            self.SendFile(CollectorIp)
         elif "test" in DirTest:
             print("All logging folders already exist, proceeding to deploy test")
 
@@ -103,7 +103,7 @@ class Collector():
 class IpScanner():
     def __init__(self):
         self.q=Queue()
-        self.network = ("215.16.144.") #("10.0.0.")
+        self.network = ("215.16.144.")
         self.lst = []
     def scanner(self, ip):
         address = self.network + str(ip)
@@ -179,8 +179,8 @@ class windowOne():
         self.label5 = tk.Label(master, text="Activity monitor")
         self.label5.grid(column=3,row=0)
 
-        self.combo1 = tk.ttk.Combobox(master); self.combo1['values']= ["Please scan for ip first"]
-        self.combo1.grid(column=1,row=2)
+        self.lstbox1 = tk.Listbox(master, selectmode="multiple", width=20, height=5)
+        self.lstbox1.grid(column=1,row=2)
 
         self.text1 = tk.Text(master, height=10, width=60)
         self.text1.grid(column=3,row=1, rowspan = 10)
@@ -188,17 +188,32 @@ class windowOne():
 
 
     def clicked(self):
-        ip = self.combo1.get()
-        self.egress.SendFile(ip)
-        print(" All tests are now complete, after 20 Seconds all result files will be pulled")
-        time.sleep(20)
-        self.egress.GetFile(ip,self.directory)    # Collector().GetFile()
-        #messagebox.showinfo('This is a popup', str(value))
+        if self.directory == "":
+            self.text1.insert(tk.END, "\n You must select a directory first")
+        else:
+            selection = self.lstbox1.curselection()
+            print(selection)
+            if not selection:
+                self.text1.insert(tk.END, "\n No IP address selected.... nothing to do!")
+            else:
+                for i in selection:
+                    ip = self.lstbox1.get(i)
+                    self.text1.insert(tk.END, ("\n" + str(ip) + " Has been selected, starting agress test now!"))
+                    self.egress.SendFile(ip)
+                    self.master.update()
+                self.text1.insert(tk.END, "\n All tests are now complete, after 20 Seconds all result files will be pulled")
+                self.master.update()
+                time.sleep(20)
+                for i in selection:
+                    ip = self.lstbox1.get(i)
+                    self.egress.GetFile(ip,self.directory)
+                self.text1.insert(tk.END, "\n All test files have been received you can now check the results")
+                self.text1.yview(tk.END)
 
     def opendirectory(self):
         name = fd.askdirectory()
         self.directory = name
-        self.text1.insert(tk.END, "directory" + self.directory)
+        self.text1.insert(tk.END, "\n Directory Selected: " + self.directory)
 
 
     def openfile(self):
@@ -209,8 +224,11 @@ class windowOne():
 
     def ipscan(self):
         address = self.scan.main()
-        self.combo1["values"] = ['']
-        self.combo1["values"] = address#['fdqwd', 'qwdqwwd']
+        self.text1.insert(tk.END, ("\n The below collectors have been found! \n" + str(address)))
+        for i in range(len(address)):
+            self.lstbox1.insert(tk.END, address[i])
+        #self.combo1["values"] = ['']
+        #self.combo1["values"] = address#['fdqwd', 'qwdqwwd']
 
 
 if __name__ == "__main__":
